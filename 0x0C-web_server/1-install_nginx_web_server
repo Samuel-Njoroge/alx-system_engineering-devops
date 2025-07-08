@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Exit any error
+set -e
+
+# Update package list
+apt-get update
+
+# Install nginx 
+apt-get update -y nginx
+
+# Replace the Nginx index with "Hello World!"
+echo "Hello World!" > /var/www/html/index.html
+
+# Start nginx using services
+service nginx start
+
+# Ensure nginx is enabled at boot
+update-rc.d nginx defaults
