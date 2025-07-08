@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Exit on error
+set -e
+
+# Update and install Nginx
+apt-get update
+apt-get install -y nginx
+
+# Create new redirect target page
+echo "You have been redirected." > /var/www/html/new_page.html
+
+# Add redirect rule to default Nginx config
+sed -i '/location \/ {/a \
+    location /redirect_me {\n\
+        return 301 /new_page.html;\n\
+    }' /etc/nginx/sites-available/default
+
+# Restart Nginx using service 
+service nginx restart
