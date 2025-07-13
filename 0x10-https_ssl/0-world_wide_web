@@ -1,0 +1,37 @@
+#!/bin/bash
+# shellcheck disable=SC2086
+
+# Function to resolve a subdomain's DNS A record
+resolve_subdomain() {
+    local full_domain=$1
+    local record_type
+    local destination
+
+    record_type="A"
+    destination=$(dig +short $full_domain | awk 'NR==1')
+
+    if [[ -n "$destination" ]]; then
+        echo "The subdomain $full_domain is a $record_type record and points to $destination"
+    else
+        echo "The subdomain $full_domain has no A record or does not resolve"
+    fi
+}
+
+# Check argument count
+if [[ $# -lt 1 ]]; then
+    echo "Usage: $0 domain [subdomain]"
+    exit 1
+fi
+
+domain=$1
+subdomain=$2
+
+# If subdomain is provided, audit only that
+if [[ -n "$subdomain" ]]; then
+    full_domain="$subdomain.$domain"
+    resolve_subdomain "$full_domain"
+else
+    for sub in www lb-01 web-01 web-02; do
+        resolve_subdomain "$sub.$domain"
+    done
+fi
